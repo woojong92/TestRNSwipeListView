@@ -1,112 +1,95 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
-import React from 'react';
-import type {Node} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
+  TouchableOpacity,
   View,
 } from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+import {SwipeListView} from 'react-native-swipe-list-view';
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  textContainer: {
+    width: '100%',
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  styledText: {
+    color: '#111',
+    fontWeight: 'bold',
   },
-  highlight: {
-    fontWeight: '700',
+  swipeListItem: {
+    alignItems: 'center',
+    borderBottomColor: '#fff',
+    borderBottomWidth: 1,
+    justifyContent: 'center',
+    height: 50,
+    backgroundColor: '#eee',
+  },
+  swipeHiddenItemContainer: {
+    flex: 1,
+    height: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    flexDirection: 'row',
+  },
+  swipeHiddenItem: {
+    width: 70,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  swipeHiddenItemText: {
+    color: 'white',
+    fontSize: 14,
   },
 });
 
-export default App;
+const LIST_VIEW_DATA = Array(5)
+  .fill('')
+  .map((_, i) => ({key: `${i}`, text: `item #${i}`}));
+
+export default () => {
+  const [text, setText] = useState('Not Pressed');
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.textContainer}>
+        <Text style={styles.styledText}>{text}</Text>
+      </View>
+
+      <SwipeListView
+        data={LIST_VIEW_DATA}
+        renderItem={({item}) => (
+          <View style={styles.swipeListItem}>
+            <Text>{item.text}</Text>
+          </View>
+        )}
+        renderHiddenItem={(data, rowMap) => (
+          <View style={styles.swipeHiddenItemContainer}>
+            <TouchableOpacity
+              onPress={() => setText(`${data.item.text} left is pressed`)}>
+              <View style={[styles.swipeHiddenItem, {backgroundColor: 'pink'}]}>
+                <Text style={styles.swipeHiddenItemText}>left</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setText(`${data.item.text} right is pressed`)}>
+              <View
+                style={[styles.swipeHiddenItem, {backgroundColor: 'skyblue'}]}>
+                <Text style={styles.swipeHiddenItemText}>right</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
+        leftOpenValue={70}
+        rightOpenValue={-70}
+      />
+    </SafeAreaView>
+  );
+};
